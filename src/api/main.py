@@ -14,4 +14,4 @@ async def ping():
     }
 
 
-app.include_router(todo_router, prefix="/v1/todo", tags=["todo"])
+app.include_router(todo_router, prefix="/api/v1/todo", tags=["todo"])
