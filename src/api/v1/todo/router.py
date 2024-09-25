@@ -1,5 +1,4 @@
-from fastapi import APIRouter, HTTPException, status
-from fastapi.params import Depends
+from fastapi import APIRouter, HTTPException, status, Depends
 from loguru import logger
 from uuid import UUID
 
@@ -60,6 +59,29 @@ async def update_todo(
         logger.error(f"Error updating todo: {e}")
         raise HTTPException(status_code=500, detail="Something went wrong")
 
+@router.patch("/{todo_uuid}/completed", response_model=TodoDTO)
+async def mark_as_done(
+    todo_uuid: UUID, todo_service: TodoService = Depends(get_todo_service)
+):
+    try:
+        return await todo_service.mark_as_done(todo_uuid)
+    except TodoNotFound as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    except Exception as e:
+        logger.error(f"Error marking todo as done: {e}")
+        raise HTTPException(status_code=500, detail="Something went wrong")
+
+@router.patch("/{todo_uuid}/uncompleted", response_model=TodoDTO)
+async def mark_as_undone(
+    todo_uuid: UUID, todo_service: TodoService = Depends(get_todo_service)
+):
+    try:
+        return await todo_service.mark_as_undone(todo_uuid)
+    except TodoNotFound as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    except Exception as e:
+        logger.error(f"Error marking todo as undone: {e}")
+        raise HTTPException(status_code=500, detail="Something went wrong")
 
 @router.delete("/{todo_uuid}")
 async def delete_todo(
@@ -68,6 +90,8 @@ async def delete_todo(
     try:
         await todo_service.delete_todo(todo_uuid)
         return {"message": "Todo deleted"}
+    except TodoNotFound as e:
+        raise HTTPException(status_code=404, detail=str(e))
     except Exception as e:
         logger.error(f"Error deleting todo: {e}")
         raise HTTPException(status_code=500, detail="Something went wrong")

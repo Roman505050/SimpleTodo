@@ -4,6 +4,7 @@ import datetime
 
 
 class UpdateTodoDTO(BaseModel):
-    title: Optional[str] = Field(default=None, max_length=64)
-    description: Optional[str] = Field(default=None, max_length=255)
-    done: Optional[bool] = Field(default=None)
+    title: str = Field(default=..., max_length=64)
+    description: str = Field(default=..., max_length=255)
+    done: bool = Field(default=...)
+    deadline: Optional[datetime.datetime] = Field(default=None)

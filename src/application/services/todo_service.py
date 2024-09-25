@@ -24,23 +24,25 @@ class TodoService:
 
     async def update_todo(self, uuid: UUID, todo: UpdateTodoDTO) -> TodoDTO:
         todo_entity = await self.todo_repository.get(uuid)
-        if todo.done is not None:
-            if todo.done:
-                todo_entity.mark_as_done()
-            else:
-                todo_entity.mark_as_undone()
-        if todo.title is not None:
-            todo_entity.update_title(todo.title)
-        if todo.description is not None:
-            todo_entity.update_description(todo.description)
+        if todo.done:
+            todo_entity.mark_as_done()
+        else:
+            todo_entity.mark_as_undone()
+        todo_entity.update_title(todo.title)
+        todo_entity.update_description(todo.description)
+        todo_entity.update_deadline(todo.deadline)
         todo_entity = await self.todo_repository.update(todo_entity)
         return TodoDTO.from_entity(todo_entity)
 
-    async def update_todo_deadline(
-        self, uuid: UUID, deadline: Optional[datetime.datetime]
-    ) -> TodoDTO:
+    async def mark_as_done(self, uuid: UUID) -> TodoDTO:
         todo_entity = await self.todo_repository.get(uuid)
-        todo_entity.update_deadline(deadline)
+        todo_entity.mark_as_done()
+        todo_entity = await self.todo_repository.update(todo_entity)
+        return TodoDTO.from_entity(todo_entity)
+
+    async def mark_as_undone(self, uuid: UUID) -> TodoDTO:
+        todo_entity = await self.todo_repository.get(uuid)
+        todo_entity.mark_as_undone()
         todo_entity = await self.todo_repository.update(todo_entity)
         return TodoDTO.from_entity(todo_entity)
 
@@ -53,4 +55,5 @@ class TodoService:
         return [TodoDTO.from_entity(entity) for entity in todo_entities]
 
     async def delete_todo(self, uuid: UUID) -> None:
+
         await self.todo_repository.delete(uuid)

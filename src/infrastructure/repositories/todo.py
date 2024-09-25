@@ -59,6 +59,10 @@ class TodoRepository(ITodoRepository):
         return todo
 
     async def delete(self, uuid: UUID) -> None:
+        check_stmt = select(self.model.uuid).filter_by(uuid=uuid)
+        check_result = await self.session.execute(check_stmt)
+        if not check_result.scalars().first():
+            raise TodoNotFound(f"Todo with uuid {uuid} not found")
         stmt = delete(self.model).filter_by(uuid=uuid)
         await self.session.execute(stmt)
         await self.session.commit()
