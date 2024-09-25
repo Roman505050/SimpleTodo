@@ -59,6 +59,7 @@ async def update_todo(
         logger.error(f"Error updating todo: {e}")
         raise HTTPException(status_code=500, detail="Something went wrong")
 
+
 @router.patch("/{todo_uuid}/completed", response_model=TodoDTO)
 async def mark_as_done(
     todo_uuid: UUID, todo_service: TodoService = Depends(get_todo_service)
@@ -71,6 +72,7 @@ async def mark_as_done(
         logger.error(f"Error marking todo as done: {e}")
         raise HTTPException(status_code=500, detail="Something went wrong")
 
+
 @router.patch("/{todo_uuid}/uncompleted", response_model=TodoDTO)
 async def mark_as_undone(
     todo_uuid: UUID, todo_service: TodoService = Depends(get_todo_service)
@@ -82,6 +84,7 @@ async def mark_as_undone(
     except Exception as e:
         logger.error(f"Error marking todo as undone: {e}")
         raise HTTPException(status_code=500, detail="Something went wrong")
+
 
 @router.delete("/{todo_uuid}")
 async def delete_todo(
